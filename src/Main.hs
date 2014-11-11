@@ -1,6 +1,3 @@
--- | Main entry point to the application.
-module Main where
-
 import Data.Maybe (fromJust)
 import LevelManager
 import Data.Char (toLower)
