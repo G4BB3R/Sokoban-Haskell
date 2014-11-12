@@ -1,6 +1,5 @@
 module LevelManager where
-
-{- Converter Box de elemento de mapa pra elemento externo -}
+import Data.Maybe (isNothing)
 
 data Item  = Vacuo | Wall | Slot | Box | SlotBox deriving (Eq)
 data Tile  = Tile { posTile :: Pos, posItem :: Maybe Item }
@@ -15,6 +14,9 @@ getLevelById _id = if _id `elem` [1..length levelDatabase] then Just (levelDatab
 
 isPosEquals :: Pos -> Pos -> Bool
 isPosEquals posA posB = fst posA == fst posB && snd posA == snd posB
+
+didPlayerBoxedAllSlots :: Map -> Bool
+didPlayerBoxedAllSlots _map = Just Slot `notElem` [posItem x | x <- concat _map] 
 
 charToTile :: Char -> Maybe Item
 charToTile '.' = Just Vacuo
@@ -67,10 +69,20 @@ tileToChar pos tile = if isPosEquals pos (posTile tile) then 'λ' else
 
 moveBox :: Pos -> Pos -> Map -> Map
 moveBox _pos1 _pos2 _map = map (map change) _map where
-    change tile = let pos = posTile tile in
-                      if isPosEquals pos _pos1 then Tile _pos1 (getItemByPos _pos2 _map)
-                 else if isPosEquals pos _pos2 then Tile _pos2 (getItemByPos _pos1 _map)
-                 else tile
+    change tile =
+        let
+            pos    = posTile tile
+            _item1 = getItemByPos _pos1 _map
+            _item2 = getItemByPos _pos2 _map
+            (_item1', _item2') = case () of _
+                                                | _item1 == Just Box     && _item2 == Just Slot -> (Nothing,   Just SlotBox)
+                                                | _item1 == Just SlotBox && _item2 == Just Slot -> (Just Slot, Just SlotBox)
+                                                | _item1 == Just SlotBox && isNothing _item2 -> (Just Slot, Just Box)
+                                                | otherwise -> (_item2, _item1)
+        in
+                if isPosEquals pos _pos1 then Tile _pos1 _item1'
+           else if isPosEquals pos _pos2 then Tile _pos2 _item2'
+           else tile
 
 drawMap :: LevelEntry -> String
 drawMap _level = let _map = mapLevelEntry _level
@@ -90,7 +102,14 @@ levelDatabase = [
             "...XXX...."
         ]),
         LevelEntry (2, 2) (strToMap [
-          "XbX"
+            "XXXXXXXXXX",
+            "X        X",
+            "X º      X",
+            "X º    º X",
+            "X b º    X",
+            "X     b  X",
+            "X        X",
+            "XXXXXXXXXX"
         ])
     ]
 
