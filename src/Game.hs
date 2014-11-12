@@ -18,7 +18,7 @@ mainGame :: LevelEntry -> IO Bool
 mainGame _level = do
     putStrLn $ drawMap _level
     if didPlayerBoxedAllSlots (mapLevelEntry _level) then do
-        putStrLn "Victory! Unlocked next map."
+        putStrLn "Vitória!"
         return True
     else do
         raw_dir <- getLine
