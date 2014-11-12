@@ -1,7 +1,7 @@
 module LevelManager where
 import Data.Maybe (isNothing)
 
-data Item  = Vacuo | Wall | Slot | Box | SlotBox deriving (Eq)
+data Item  = Wall | Slot | Box | SlotBox deriving (Eq)
 data Tile  = Tile { posTile :: Pos, posItem :: Maybe Item }
 type Map   = [[Tile]]
 type Pos   = (Int, Int)
@@ -19,7 +19,6 @@ didPlayerBoxedAllSlots :: Map -> Bool
 didPlayerBoxedAllSlots _map = Just Slot `notElem` [posItem x | x <- concat _map] 
 
 charToTile :: Char -> Maybe Item
-charToTile '.' = Just Vacuo
 charToTile 'X' = Just Wall
 charToTile 'x' = Just Wall
 charToTile 'º' = Just Slot
@@ -61,7 +60,6 @@ tileToChar pos tile = if isPosEquals pos (posTile tile) then 'λ' else
     case posItem tile of
                     Nothing    -> ' '
                     Just tile' -> case tile' of
-                                    Vacuo   -> '.'
                                     Wall    -> 'X'
                                     Slot    -> '_'
                                     SlotBox -> 's'
@@ -102,14 +100,13 @@ levelDatabase = [
             "...XXX...."
         ]),
         LevelEntry (2, 2) (strToMap [
-            "XXXXXXXXXX",
-            "X        X",
-            "X º      X",
-            "X º    º X",
-            "X b º    X",
-            "X     b  X",
-            "X        X",
-            "XXXXXXXXXX"
+            " XXXXXXX  ",
+            " X     XXX",
+            "XXbXXX   X",
+            "X   b  b X",
+            "X ººX b XX",
+            "XXººX   X ",
+            " XXXXXXXX "
         ])
     ]
 

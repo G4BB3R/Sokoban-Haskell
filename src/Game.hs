@@ -17,13 +17,11 @@ getDirectionByStr str = let d = toLower . head $ str in
 mainGame :: LevelEntry -> IO Bool
 mainGame _level = do
     putStrLn $ drawMap _level
-    if didPlayerBoxedAllSlots (mapLevelEntry _level) then do
-        putStrLn "Vitória!"
+    if didPlayerBoxedAllSlots (mapLevelEntry _level) then
         return True
     else do
         raw_dir <- getLine
-        if map toLower raw_dir == "k" then do
-            putStrLn "Você se matou."
+        if map toLower raw_dir == "k" then
             return False
         else do
             let maybe_dir = getDirectionByStr raw_dir
@@ -33,9 +31,7 @@ mainGame _level = do
                     let new_pos = getPosByDir (posLevelEntry _level) dir
                     let item = getItemByPos new_pos (mapLevelEntry _level)
                     case item of
-                        Nothing -> do
-                            putStrLn "Funcionou!"
-                            mainGame (LevelEntry new_pos (mapLevelEntry _level))
+                        Nothing -> mainGame (LevelEntry new_pos (mapLevelEntry _level))
                         Just slot
                                 | slot == Box || slot == SlotBox -> do
                                     let new_box_pos = getPosByDir new_pos dir
@@ -80,10 +76,18 @@ mainMenu fases = do
                                 putStrLn $ "Iniciando fase " ++ show fase ++ "."
                                 win <- mainGame $ fromJust $ getLevelById fase
                                 if win then do
-                                    putStrLn $ "Você desbloqueou a fase " ++ show (fase + 1) ++ "!"
-                                    mainMenu (fases + 1)
+                                    putStrLn "Vitória!"
+                                    if fase == fases then do
+                                        if fases /= length levelDatabase then do
+                                            putStrLn $ "Você desbloqueou a fase " ++ show (fase + 1) ++ "!"
+                                            mainMenu (fases + 1)
+                                        else do
+                                            putStrLn "Parabéns, você zerou o jogo!"
+                                            mainMenu fases
+                                    else
+                                        mainMenu fases
                                 else do
-                                    putStrLn "Você perdeu... tente novamente!"
+                                    putStrLn "Você se matou... tente novamente!"
                                     mainMenu fases
 
 mainStart :: IO ()
