@@ -99,7 +99,7 @@ levelDatabase = [
             "...XºX....",
             "...XXX...."
         ]),
-        LevelEntry (2, 2) (strToMap [
+        LevelEntry (4, 2) (strToMap [
             " XXXXXXX  ",
             " X     XXX",
             "XXbXXX   X",
